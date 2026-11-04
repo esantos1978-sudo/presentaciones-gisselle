@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>La Web de las Tartas 2.0</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: #f5f5dc;
+        color: #1a1a1a;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      .presentation {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 60px;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Accesibilidad: Respeta la preferencia de movimiento reducido */
+      @media (prefers-reduced-motion: reduce) {
+        .slide {
+          transition: none;
+        }
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .slide.prev {
+        transform: translateX(-100%);
+      }
+
+      h1 {
+        font-size: 4rem;
+        font-weight: 900;
+        margin-bottom: 20px;
+        letter-spacing: -2px;
+        line-height: 1;
+      }
+      h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 30px;
+        letter-spacing: -1px;
+      }
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin-bottom: 40px;
+        opacity: 0.7;
+      }
+      .subtitle {
+        font-size: 1.8rem;
+        font-weight: 300;
+        opacity: 0.8;
+        margin-bottom: 20px;
+      }
+
+      .content {
+        max-width: 900px;
+        text-align: left;
+        width: 100%;
+      }
+      ul {
+        list-style: none;
+        font-size: 1.4rem;
+        line-height: 2.2;
+      }
+      li {
+        margin-bottom: 15px;
+        padding-left: 30px;
+        position: relative;
+      }
+      li:before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: #d2691e;
+        font-weight: bold;
+      }
+      .checklist li:before {
+        content: "✓";
+        color: #2e8b57;
+      }
+      .warning li:before {
+        content: "!";
+        color: #ff6347;
+      }
+
+      .pillars {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+      }
+      .pillar {
+        text-align: center;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+      }
+      .pillar-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+      }
+      .pillar-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .flow {
+        background: rgba(255, 255, 255, 0.4);
+        padding: 40px;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        line-height: 2;
+        font-family: "Courier New", monospace;
+      }
+      .flow-step {
+        margin: 15px 0;
+        padding-left: 20px;
+        border-left: 3px solid #d2691e;
+      }
+
+      .table-container {
+        width: 100%;
+        margin-top: 30px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1.2rem;
+      }
+      th {
+        background: #1a1a1a;
+        color: #f5f5dc;
+        padding: 20px;
+        text-align: left;
+        font-weight: 700;
+      }
+      td {
+        padding: 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .accent {
+        color: #d2691e;
+        font-weight: 700;
+      }
+
+      .nav-hint,
+      .slide-counter {
+        position: fixed;
+        bottom: 30px;
+        font-size: 0.9rem;
+        opacity: 0.6;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 10px 20px;
+        border-radius: 20px;
+        pointer-events: auto; /* Asegura que sean clickeables si fuera necesario, pero el JS lo ignorará */
+        user-select: none;
+      }
+      .nav-hint {
+        right: 30px;
+      }
+      .slide-counter {
+        left: 30px;
+        font-weight: 700;
+      }
+
+      .emoji {
+        font-size: 1.5rem;
+        margin-right: 10px;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+        h2 {
+          font-size: 2rem;
+        }
+        .pillars {
+          grid-template-columns: 1fr;
+        }
+        .slide {
+          padding: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="presentation" role="main">
+      <!-- Slide 1: Portada -->
+      <div class="slide active" id="slide-1">
+        <h1>La Web de las Tartas 2.0</h1>
+        <h3>Cómo vender más, sin complicar la operativa.</h3>
+        <p class="subtitle">Reunión de estrategia · Noviembre 2026</p>
+      </div>
+
+      <!-- Slide 2: Punto de Partida -->
+      <div class="slide" id="slide-2">
+        <h2>Lo que ya sabemos</h2>
+        <div class="content">
+          <ul class="checklist">
+            <li>La Versión 1 de la web tiene feedback positivo</li>
+            <li>El producto gusta y la calidad está demostrada</li>
+            <li>El modelo solo recogida (pickup) es viable</li>
+            <li class="accent">
+              El siguiente paso: Escalar con procesos automatizados
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 3: Objetivo -->
+      <div class="slide" id="slide-3">
+        <h2>Vender más. Sin delivery. Sin caos.</h2>
+        <div class="pillars">
+          <div class="pillar">
+            <div class="pillar-icon">🎯</div>
+            <div class="pillar-title">Más pedidos</div>
+            <p>Facilitar la compra en 3 clics</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🧘</div>
+            <div class="pillar-title">Operativa sostenible</div>
+            <p>Tú controlas la agenda</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">💬</div>
+            <div class="pillar-title">Experiencia memorable</div>
+            <p>Proceso moderno y cercano</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Solución -->
+      <div class="slide" id="slide-4">
+        <h2>Una web que trabaja para ti</h2>
+        <div class="content">
+          <ul>
+            <li>
+              <span class="emoji">🎨</span
+              ><strong>Personalización guiada:</strong> El cliente diseña su
+              tarta paso a paso
+            </li>
+            <li>
+              <span class="emoji">📱</span
+              ><strong>Confirmación por WhatsApp:</strong> Rápido, directo y
+              humano
+            </li>
+            <li>
+              <span class="emoji">📅</span
+              ><strong>Reservas con franjas horarias:</strong> Control total del
+              aforo
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 5: Camino de Ingredientes -->
+      <div class="slide" id="slide-5">
+        <h2>Personalización con lógica</h2>
+        <div class="flow">
+          <div class="flow-step">1. Tamaño y raciones → Define la base</div>
+          <div class="flow-step">
+            2. Tipo de bizcocho → Opciones disponibles
+          </div>
+          <div class="flow-step">
+            3. Rellenos compatibles → Solo los que funcionan
+          </div>
+          <div class="flow-step">
+            4. Cobertura y decoración → El toque final
+          </div>
+          <div class="flow-step">5. Dedicatoria → Personalización extra</div>
+        </div>
+        <p style="margin-top: 30px; font-size: 1.2rem; opacity: 0.8">
+          Cada paso filtra el siguiente. Evitamos combinaciones imposibles.
+        </p>
+      </div>
+
+      <!-- Slide 6: WhatsApp -->
+      <div class="slide" id="slide-6">
+        <h2>Del pedido a la confirmación</h2>
+        <div class="flow">
+          <div class="flow-step">Cliente finaliza pedido</div>
+          <div class="flow-step">↓</div>
+          <div class="flow-step">Se genera resumen automático</div>
+          <div class="flow-step">↓</div>
+          <div class="flow-step">Te llega a tu WhatsApp</div>
+          <div class="flow-step">↓</div>
+          <div class="flow-step">Tú confirmas</div>
+          <div class="flow-step">↓</div>
+          <div class="flow-step">El cliente recibe su OK ✅</div>
+        </div>
+      </div>
+
+      <!-- Slide 7: Control de Recogida -->
+      <div class="slide" id="slide-7">
+        <h2>Tú mandas en la agenda</h2>
+        <div class="content">
+          <ul>
+            <li>
+              <strong>Selector de fecha y franja horaria</strong> obligatoria
+            </li>
+            <li>
+              <strong>Cupos limitados</strong> por franja (ej: máx. 5 tartas de
+              11:00 a 12:00)
+            </li>
+            <li>
+              <strong>Bloqueo automático</strong> cuando se alcanza el límite
+            </li>
+          </ul>
+          <p
+            style="
+              margin-top: 40px;
+              font-size: 1.3rem;
+              text-align: center;
+              opacity: 0.8;
+            "
+          >
+            Cero estrés los sábados por la mañana.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 8: Agente IA -->
+      <div class="slide" id="slide-8">
+        <h2>Un recepcionista digital... cuando toque</h2>
+        <div class="content">
+          <ul class="warning">
+            <li><strong>No en la V2:</strong> Primero validamos lo básico</li>
+          </ul>
+          <ul class="checklist" style="margin-top: 40px">
+            <li><strong>En Fase 2:</strong> Implementamos el agente IA</li>
+            <li>Ayuda a personalizar y resuelve dudas frecuentes</li>
+            <li>Alérgenos, conservación, recomendaciones</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 9: Blog -->
+      <div class="slide" id="slide-9">
+        <h2>Un blog que atrae clientes</h2>
+        <div class="content">
+          <p style="font-size: 1.3rem; margin-bottom: 30px; opacity: 0.8">
+            No escribimos por escribir, atacamos búsquedas reales:
+          </p>
+          <ul>
+            <li>"Cómo elegir la tarta perfecta para una comunión"</li>
+            <li>"Tartas sin gluten que sí saben a algo"</li>
+            <li>"Ideas originales para cumpleaños infantiles"</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 10: Campañas -->
+      <div class="slide" id="slide-10">
+        <h2>Invertimos donde está el dinero</h2>
+        <div class="content">
+          <p style="font-size: 1.3rem; margin-bottom: 30px">
+            La home se transforma según la temporada:
+          </p>
+          <ul>
+            <li><span class="emoji">🎃</span>Halloween</li>
+            <li><span class="emoji">👩</span>Día de la Madre / Padre</li>
+            <li><span class="emoji">👑</span>Reyes Magos</li>
+            <li>
+              <span class="emoji">🎂</span>Temporada de Comuniones y Bodas
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Slide 11: Roadmap -->
+      <div class="slide" id="slide-11">
+        <h2>Vamos paso a paso</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Fase</th>
+                <th>Qué incluye</th>
+                <th>Objetivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Lanzamiento</strong></td>
+                <td>Web V2 + Personalización + WhatsApp + Reservas</td>
+                <td>Vender y validar</td>
+              </tr>
+              <tr>
+                <td><strong>2. Automatización</strong></td>
+                <td>Agente IA + Mejoras UX</td>
+                <td>Escalar y ahorrar tiempo</td>
+              </tr>
+              <tr>
+                <td><strong>3. Crecimiento</strong></td>
+                <td>Blog SEO + Campañas avanzadas</td>
+                <td>Posicionamiento largo plazo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Slide 12: Próximos Pasos -->
+      <div class="slide" id="slide-12">
+        <h2>¿Qué necesitamos para arrancar?</h2>
+        <div class="content">
+          <ul>
+            <li>
+              <span class="emoji">📋</span
+              ><strong>Tu conocimiento:</strong> Combinaciones válidas de
+              ingredientes
+            </li>
+            <li>
+              <span class="emoji">📸</span><strong>Material:</strong> Fotos de
+              tus tartas
+            </li>
+            <li>
+              <span class="emoji">🎯</span><strong>Calendario:</strong> Tus
+              fechas clave del año
+            </li>
+            <li>
+              <span class="emoji">💬</span><strong>Tu feedback:</strong> ¿Qué te
+              parece esta dirección?
+            </li>
+          </ul>
+          <p
+            style="
+              margin-top: 50px;
+              font-size: 1.4rem;
+              text-align: center;
+              font-weight: 700;
+            "
+          >
+            ¿Cuáles son las 3 tartas más vendidas y las 2 que más problemas dan?
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesibilidad: aria-live para lectores de pantalla -->
+    <div class="slide-counter" aria-live="polite">
+      <span id="current">1</span> / <span id="total">12</span>
+    </div>
+    <div class="nav-hint">← → o click para navegar</div>
+
+    <script>
+      const slides = document.querySelectorAll(".slide");
+      const totalSlides = slides.length;
+      let currentSlide = 0;
+      let isSwiping = false;
+
+      document.getElementById("total").textContent = totalSlides;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.remove("active", "prev");
+          if (i === index) {
+            slide.classList.add("active");
+          } else if (i < index) {
+            slide.classList.add("prev");
+          }
+        });
+        document.getElementById("current").textContent = index + 1;
+        // Actualiza el hash sin añadir al historial (para no saturar el botón "atrás" en cada slide)
+        history.replaceState(null, null, `#slide-${index + 1}`);
+      }
+
+      function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          showSlide(currentSlide);
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 0) {
+          currentSlide--;
+          showSlide(currentSlide);
+        }
+      }
+
+      // Navegación por teclado
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") {
+          e.preventDefault(); // Previene scroll de la barra espaciadora
+          nextSlide();
+        } else if (e.key === "ArrowLeft") {
+          prevSlide();
+        }
+      });
+
+      // Navegación por click (ignorando la UI fija)
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".slide-counter, .nav-hint") || isSwiping) return;
+        const x = e.clientX;
+        const width = window.innerWidth;
+        if (x > width / 2) nextSlide();
+        else prevSlide();
+      });
+
+      // Touch support robusto para móvil
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          isSwiping = false;
+        },
+        { passive: true },
+      );
+
+      document.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          const swipeThreshold = 50;
+          const diff = touchStartX - touchEndX;
+
+          if (Math.abs(diff) > swipeThreshold) {
+            isSwiping = true;
+            if (diff > 0) nextSlide();
+            else prevSlide();
+
+            // Resetear el flag después de un breve momento para evitar doble disparo con el click
+            setTimeout(() => {
+              isSwiping = false;
+            }, 300);
+          }
+        },
+        { passive: true },
+      );
+
+      // Persistencia por hash (carga inicial y cambio manual de URL)
+      function loadFromHash() {
+        const hash = window.location.hash;
+        if (hash) {
+          const match = hash.match(/#slide-(\d+)/);
+          if (match) {
+            const slideNum = parseInt(match[1], 10);
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+              currentSlide = slideNum - 1;
+            }
+          }
+        }
+        showSlide(currentSlide);
+      }
+
+      window.addEventListener("hashchange", loadFromHash);
+      // Inicializar desde el hash si existe, si no, desde la slide 1
+      loadFromHash();
+    </script>
+  </body>
+</html>
